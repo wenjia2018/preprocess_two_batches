@@ -1,0 +1,6 @@
+data*
+.Rproj.user
+.smbdelete*
+._*
+.Rhistory
+.DS_Store

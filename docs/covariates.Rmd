@@ -1,0 +1,140 @@
+---
+title: ""
+#output: html_document
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,comment=NULL,message=FALSE, warning=FALSE, cache = F)
+```
+
+```{r include=T, results='asis'}
+library(tidyverse)
+waves=readRDS(file="/volumes/share/preprocess/data/waves.rds")
+ dat= readRDS("/volumes/share/preprocess/data/dt_steve.rds") # expression set 
+  wave5 <- foreign::read.xport("/Volumes/Data/Addhealth/Addhealthdata/wave5/SurveyData/wave5_s1.xpt") %>% as_tibble
+#phen=waves %>% mutate(blood = AID %in% dat$AID) %>% filter(blood==TRUE) 
+phen = waves %>% mutate(blood = AID %in% dat$AID) %>% filter(wave5 == TRUE)  #prepare for a summary table for both blood sample and wave5 sample
+phen = phen %>% 
+  mutate_at(.vars = vars("months_biow5"), 
+            #.funs = funs(ifelse(. %in% c(1, 2, 3, 12), 1, 0) %>% as.factor)) %>% 
+            .funs = funs(. %>% as.factor)) %>% 
+  mutate(time_biow5 = case_when( (hour_biow5==6 | hour_biow5==7) ~ "between 6 and 7",
+                                 (hour_biow5==8 | hour_biow5==9) ~ "between 8 and 9",
+                                 (hour_biow5==10 | hour_biow5==11) ~ "between 10 and 11",
+                                 (hour_biow5==12 | hour_biow5==13) ~ "between 12 and 13",
+                                 (hour_biow5==14 | hour_biow5==15) ~ "between 14 and 15",
+                                 (hour_biow5==16 | hour_biow5==17) ~ "between 16 and 17",
+                                 (hour_biow5==18 | hour_biow5==19 | hour_biow5==20) ~ "between 18 and 20") %>% as.factor) %>% 
+  mutate_at(.vars=vars(c("pregnant_biow5", "illness_4wks_biow5", "illness_2wks_biow5", "smoking_biow5", "travel_biow5",
+                         "bingedrink", "currentsmoke", "cpreterm")),
+            .funs = list(~ .x %>% fct_recode(No = "0", Yes = "1"))) %>% 
+  mutate_at(.vars = vars("sex_interv"), .funs = list(~ .x %>% fct_recode(Male = "m", Femal = "f"))) %>% 
+  mutate_at(.vars = vars("re"), .funs = list(~ .x %>% fct_recode(`White (Nonhispanic)` = "1", `Black (Nonhispanic)` = "2", `Asian` = "3",
+                                                                 `Other (Nonhispanic)` = "4", `Hispanic` = "5"))) %>%
+  mutate_at(.vars=vars(c( "kit_biow5", "tube_biow5")),
+            .funs = list(~ .x %>% fct_recode(Normal = "0", `Some Problems` = "1"))) %>%
+  mutate_at(.vars=vars(c( "blood")),
+            .funs = list(~ .x %>% as.character() %>%  fct_recode(mRNA_sample = "TRUE", `NonmRNA_sample` = "FALSE")))%>%
+  mutate_at(.vars=vars(c( "W5REGION")),
+            .funs = list(~ .x %>%  fct_recode(`Northeast` = "NE", `Midwest` = "MW", `South` = "S", `West` = "W")))
+  
+  # dplyr::rename(Sex = "sex_interv",
+  #         `Race and Ethnicity` = "re",
+  #         `Age at wave 5` = "age_w5",
+  #         `Pregnancy at wave 5` = "pregnant_biow5",
+  #         `Any illness in the past 4 weeks` = "illness_4wks_biow5",
+  #         `Any illness in the past 2 weeks` = "illness_2wks_biow5",
+  #         `Smoking at the time of interview` = "smoking_biow5",
+  #         `Kit condition`= "kit_biow5",
+  #         `Tube condition` = "tube_biow5",
+  #         `Fasting hours` = "FastHrs",  
+  #         `Travelling in the past one month outside the United States` = "travel_biow5",
+  #         `Interview month` = "months_biow5",
+  #         `Interview hour`= "time_biow5"
+  #   
+  # )
+##### data imported from other sources, for example SPSS, it is common to have value and variable labels as variable attributes
+##### doing remove_all_labels to avoid the name of varialbe appearing in the table as their lable name.
+##### e.g. Fasting hours appreas as "Number of Fasting Hours (corrected version)" if lable not removed
+##### https://cran.r-project.org/web/packages/sjlabelled/vignettes/labelleddata.html
+
+#phen$`Fasting hours`=sjlabelled::remove_all_labels(phen$`Fasting hours`)
+
+### or instead of changing names of variables we could add lables for each variables
+# an example
+# var.labels = c(age="Age in Years", sex="Sex of the participant")
+# label(data) = as.list(var.labels[match(names(data), names(var.labels))])
+
+
+# we set lables for the variables we choose.
+var.labels = c(sex_interv = "Sex",
+               re = "Race/ethnicity (%)",
+               age_w1orw2 = "Age at wave 1 (yrs)",
+         pregnant_biow5 = "Pregnancy at wave 5" ,
+          illness_4wks_biow5 = "Any illness in the past 4 weeks",
+          illness_2wks_biow5 = "Any illness in the past 2 weeks",
+          smoking_biow5 = "Smoking at the time of interview",
+          kit_biow5 = "Kit condition",
+          tube_biow5 = "Tube condition",
+          FastHrs = "Fasting hours",
+          travel_biow5 = "Travelling in the past one month outside the United States",
+          months_biow5 = "Interview month",
+          time_biow5 = "Interview hour",
+          w5bmi = "BMI (kg/m2)",
+          BirthY = "Birth Year",
+         bingedrink = "Binge drinking in the past 12 months
+         (> 4 (female) and 5 (males) drinks in a row)",
+         currentsmoke = "Current smoking",
+         W5REGION = "Region of residence at wave 5",
+         cpreterm = "Born preterm"
+         )
+#Hmisc::label(phen)=as.list(var.labels[match(names(phen), names(var.labels))])
+
+
+
+controls = c("sex_interv", "re","age_w1orw2","BirthY", "bingedrink", "currentsmoke", "W5REGION","cpreterm")
+
+# controls = c("Sex", "Race", "Plate", "AvgCorrelogram100","Age at wave 5",#"w5bmi",#adding age as covariates
+#              "Pregnancy at wave 5", "Any illness in the past 4 weeks", "Any illness in the past 2 weeks",
+#              "Smoking at the time of interview", "Kit condition", "Tube condition",  "Fasting hours",  
+#              "Travelling in the past one month outside the United States",  "Interview month", "Interview hour") 
+# 
+# 
+formula_table1= controls%>% str_c(collapse = " + ")
+formula_table1= str_c(" blood ~ ", formula_table1)
+
+
+# formula_table1 =  ~ Sex + `Race and Ethnicity`+ Plate + AvgCorrelogram100 + `Age at wave 5` + `Pregnancy at wave 5` + `Any illness in the past 4 weeks` + `Any illness in the past 2 weeks` + `Smoking at the time of interview` + `Kit condition` + `Tube condition` + `Fasting hours` + `Travelling in the past one month outside the United States` + `Interview month` + `Interview hour` 
+#phen %>% select(controls) %>%qwraps2:: summary_table()
+#phen %>% select(controls) %>% stargazer:: stargazer(type='latex')
+#phen %>% select(controls) %>% Hmisc::summaryM()
+#tableby
+
+```
+
+<!-- ## descriptive summary statistics 1 -->
+
+<!-- ```{r include=T, results='asis'} -->
+
+<!-- table1::table1(formula_table1 %>% as.formula, data=phen) #only html -->
+<!-- controls3 = c("re", "Plate", "AvgCorrelogram100","age_w5",#"w5bmi",#adding age as covariates -->
+<!--              "pregnant_biow5", "illness_4wks_biow5", "illness_2wks_biow5", -->
+<!--              "smoking_biow5", "kit_biow5", "tube_biow5",  "FastHrs", -->
+<!--              "travel_biow5",  "months_biow5", "time_biow5") -->
+
+<!-- formula_table3= controls3 %>% str_c(collapse = " + ") -->
+<!-- formula_table3= str_c("sex_interv ~ ", formula_table3)  -->
+<!-- table1::table1(formula_table3 %>% as.formula, data=phen) #only html --> 
+
+<!-- ``` -->
+
+
+
+```{r include=T, results='asis'}
+a=arsenal::tableby(formula_table1 %>% as.formula, data=phen, control = arsenal::tableby.control(test=FALSE)) %>% summary(labelTranslations = var.labels)  ##can both pdf and html
+a[["object"]][["blood"]][["NonmRNA_sample"]]=NULL
+names(a[["object"]][["blood"]])[9]="Total wave 5 sample"##can remove column change names
+names(a[["totals"]][["blood"]])[3]="Total wave 5 sample"
+a
+```

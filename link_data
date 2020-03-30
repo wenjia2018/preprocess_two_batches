@@ -1,0 +1,93 @@
+#!/bin/bash
+
+ln -s \
+"/Volumes/Data/addhealth/RNA/180626_RNAControls.dta" \
+"/Volumes/Share/preprocess/data_input/180626_RNAControls.dta" 
+
+ln -s "/Volumes/Data/addhealth/RNA/AddHealthYr1 Plates1-12 - Gene CPM Log2.txt" \
+"/Volumes/Share/preprocess/data_input/AddHealthYr1 Plates1-12 - Gene CPM Log2.txt"
+
+ln -s \
+"/Volumes/Data/addhealth/RNA/AddHealthYr1 Plates1-12 - ReadsPerGene ENSG Raw.txt" \
+"/Volumes/Share/preprocess/data_input/AddHealthYr1 Plates1-12 - ReadsPerGene ENSG Raw.txt" 
+
+ln -s \
+"/Volumes/Data/addhealth/RNA/AID_VialID.csv" \
+"/Volumes/Share/preprocess/data_input/AID_VialID.csv"
+
+ln -s \
+"/Volumes/Data/addhealth/RNA/AddHealthYr1_Plates1-12_Log2CPM_QCMetrics.txt" \
+"/Volumes/Share/preprocess/data_input/AddHealthYr1_Plates1-12_Log2CPM_QCMetrics.txt"
+
+ln -s \
+"/Volumes/Data/addhealth/RNA/AddHealthYr1 Plates1-12 - Gene CPM ReferenceGeneNormalized Log2.txt" \
+"/Volumes/Share/preprocess/data_input/AddHealthYr1 Plates1-12 - Gene CPM ReferenceGeneNormalized Log2.txt"
+
+ln -s \
+"/Volumes/Data/addhealth/addhealthdata/wave5/SurveyData/wave5_s1.xpt" \
+"/Volumes/Share/preprocess/data_input/wave5_s1.xpt"
+
+ln -s \
+"/Volumes/Data/addhealth/addhealthdata/waves_1_4/Contextual Files/Contextual - Wave I/Context1.xpt" \
+"/Volumes/Share/preprocess/data_input/Context1.xpt"
+
+ln -s \
+"/Volumes/Data/addhealth/addhealthdata/waves_1_4/Constructed Variables/W4 Constructed/w4vars.xpt" \
+"/Volumes/Share/preprocess/data_input/w4vars.xpt"
+
+ln -s \
+"/Volumes/Data/addhealth/addhealthdata/waves_1_4/Friend Files/Wave I In-Home Nominations/hfriend1.xpt" \
+"/Volumes/Share/preprocess/data_input/hfriend1.xpt"
+
+ln -s \
+"/Volumes/Data/addhealth/addhealthdata/waves_1_4/Friend Files/Wave II In-Home Nominations/hfriend2.xpt" \
+"/Volumes/Share/preprocess/data_input/hfriend2.xpt"
+
+ln -s \
+"/Volumes/Data/addhealth/addhealthdata/waves_1_4/W4 Supplemental Files-Biomarker/Glucose/glu_a1c.xpt" \
+"/Volumes/Share/preprocess/data_input/glu_a1c.xpt"
+
+ln -s \
+"/Volumes/Data/addhealth/addhealthdata/wave5/wave5_pgs_and_parental/Genetic Files/Polygenic Scores/PGS_AH1.xpt" \
+"/Volumes/Share/preprocess/data_input/PGS_AH1.xpt"
+
+ln -s \
+"/Volumes/Data/addhealth/addhealthdata/waves_1_4/Contextual Files/Census Region - Wave III/w3region.xpt" \
+"/Volumes/Share/preprocess/data_input/w3region.xpt"
+
+ln -s \
+"/Volumes/Data/addhealth/addhealthdata/waves_1_4/Contextual Files/Census Region - Wave IV/w4region.xpt" \
+"/Volumes/Share/preprocess/data_input/w4region.xpt"
+
+ln -s \
+"/Volumes/Data/addhealth/addhealthdata/wave5/Weights/wgtsw5s1.xpt" \
+"/Volumes/Share/preprocess/data_input/wgtsw5s1.xpt"
+
+# the following were manually copied, because can't be symlinked
+
+ln -s \
+"/Volumes/Data/addhealth/addhealthdata/waves_1_4/In Home Interview Files/allwave1.xpt" \
+"/Volumes/Share/preprocess/data_input/allwave1.xpt"
+
+ln -s \
+"/Volumes/Data/addhealth/addhealthdata/waves_1_4/In Home Interview Files/wave2.xpt" \
+"/Volumes/Share/preprocess/data_input/wave2.xpt"
+
+ln -s \
+"/Volumes/Data/addhealth/addhealthdata/waves_1_4/In Home Interview Files/wave3.xpt" \
+"/Volumes/Share/preprocess/data_input/wave3.xpt"
+
+ln -s \
+"/Volumes/Data/addhealth/addhealthdata/waves_1_4/In Home Interview Files/wave4.xpt" \
+"/Volumes/Share/preprocess/data_input/wave4.xpt"
+
+
+
+
+
+
+
+
+
+
+

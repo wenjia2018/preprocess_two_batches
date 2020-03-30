@@ -1,0 +1,63 @@
+---
+title: ""
+#output: html_document
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,comment=NULL,message=FALSE, warning=FALSE, cache = F)
+```
+
+```{r include=T, results='asis'}
+# source("/volumes/share/preprocess/init_packages.R")
+library(tidyverse)
+waves=readRDS(file="/volumes/share/preprocess/data/waves.rds")
+ dat= readRDS("/volumes/share/preprocess/data/dt_steve.rds") # expression set 
+phen=waves %>% mutate(blood = AID %in% dat$AID) %>% filter(blood==TRUE) 
+phen = phen %>% 
+  mutate_at(.vars = vars("months_biow5"), 
+            #.funs = funs(ifelse(. %in% c(1, 2, 3, 12), 1, 0) %>% as.factor)) %>% 
+            .funs = funs(. %>% as.factor)) %>% 
+  mutate(time_biow5 = case_when( (hour_biow5==6 | hour_biow5==7) ~ "between 6 and 7",
+                                 (hour_biow5==8 | hour_biow5==9) ~ "between 8 and 9",
+                                 (hour_biow5==10 | hour_biow5==11) ~ "between 10 and 11",
+                                 (hour_biow5==12 | hour_biow5==13) ~ "between 12 and 13",
+                                 (hour_biow5==14 | hour_biow5==15) ~ "between 14 and 15",
+                                 (hour_biow5==16 | hour_biow5==17) ~ "between 16 and 17",
+                                 (hour_biow5==18 | hour_biow5==19 | hour_biow5==20) ~ "between 18 and 20") %>% as.factor) %>% 
+  mutate_at(.vars=vars(c("pregnant_biow5", "illness_4wks_biow5", "illness_2wks_biow5", "smoking_biow5", "travel_biow5" )),
+            .funs = list(~ .x %>% fct_recode(No = "0", Yes = "1"))) %>% 
+  mutate_at(.vars=vars(c( "kit_biow5", "tube_biow5")),
+            .funs = list(~ .x %>% fct_recode(Normal = "0", `Some Problems` = "1"))) %>%
+  mutate_at(.vars=vars(c( "blood")),
+            .funs = list(~ .x %>% as.character() %>%  fct_recode(mRNA_sample = "TRUE", `NonmRNA_sample` = "FALSE")))
+
+
+controls = c("Plate", "AvgCorrelogram100",
+             "pregnant_biow5", "illness_4wks_biow5", "illness_2wks_biow5",
+             "smoking_biow5", "kit_biow5", "tube_biow5",  "FastHrs",  
+             "travel_biow5",  "months_biow5", "time_biow5") 
+
+var.labels = c(
+          Plate = "Assay Plate",
+          AvgCorrelogram100 = "AvgCorrelogram100 (Average Sample Profile Correlation)",
+          pregnant_biow5 = "Pregnancy at wave 5" ,
+          illness_4wks_biow5 = "Any illness in the past 4 weeks",
+          illness_2wks_biow5 = "Any illness in the past 2 weeks",
+          smoking_biow5 = "Smoking at the time of interview",
+          kit_biow5 = "Kit condition",
+          tube_biow5 = "Tube condition",
+          FastHrs = "Fasting hours",
+          travel_biow5 = "Travelling in the past one month outside the United States",
+          months_biow5 = "Interview month",
+          time_biow5 = "Interview hour")
+
+formula_table1= controls%>% str_c(collapse = " + ")
+formula_table1= str_c("~ ", formula_table1)
+
+arsenal::tableby(formula_table1 %>% as.formula, data=phen, na.action=na.omit, control = arsenal::tableby.control(test=FALSE)) %>% summary(labelTranslations = var.labels)  ##can both pdf and html
+
+
+```
+
+
