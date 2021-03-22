@@ -36,14 +36,14 @@ source(str_c(root_code, "R/init_packages.R")) # having done: source("R/init_inst
 source(str_c(root_code, "R/init_rna.R"))
 source(str_c(root_code, "R/init_pheno.R"))
 source(str_c(root_code, "R/merge_pheno_geno.R"))
-source(str_c(root_code, "R/init_define_gene_sets.R"))
+source(str_c(root_code, "R/init_define_gene_sets_new.R"))
 # POSSIBLY COPY ALL INPUT DATA FILES INTO A SINGLE FOLDER
 if (0) system("./move_data")
 
 # *****IMPORTANT: EXECUTION ORDER OF THE FOLLOWING FUNCTIONS MATTERS: init_rna() must precede init_pheno() *******
 # write data into nice expressionSet object >> dt_two.rds
 
-latest_phenotype_file = "waves_17.11.2020.rds" # fname to write to 
+latest_phenotype_file = "waves_10.09.2020.rds" # fname to write to 
 
 # Phenotype preprocessing
 init_pheno(output_fname = latest_phenotype_file) # writes new phenotype variables >> waves_date.rds
@@ -59,7 +59,6 @@ different_normalizations =
 
 # make expressionSet objects
 pwalk(different_normalizations, init_rna) 
-
 
 ############################################################
 # merge phenotype data into expressionSet objects
@@ -119,7 +118,7 @@ if(reconciled <- FALSE){
 signatures <- 
   names(data_2020) %>% 
   set_names() %>% 
-  map(init_define_gene_sets)
+  map(init_define_gene_sets_new)
 
 # SAVE
 iwalk(signatures, ~saveRDS(.x, file.path(data_output, str_replace(.y, ".rds", "_signature.rds"))))
