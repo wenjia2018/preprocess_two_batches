@@ -24,7 +24,7 @@ if (inside_docker <- FALSE) {
   data_input <- "/Volumes/Share/data_input/"
   data_output <- "/Volumes/Share/preprocessed_two_batches"
   root_code <- str_c(getwd(), "/")
-} else if(home_office <-TRUE) { 
+} else if(server <- TRUE) { 
   # just a convenience if we are working outside the docker container
   # root_work <- str_c(getwd(), "/")
   data_input <- "/home/share/data_input/"
@@ -43,7 +43,7 @@ if (0) system("./move_data")
 # *****IMPORTANT: EXECUTION ORDER OF THE FOLLOWING FUNCTIONS MATTERS: init_rna() must precede init_pheno() *******
 # write data into nice expressionSet object >> dt_two.rds
 
-latest_phenotype_file = "waves_17.11.2020.rds" # fname to write to 
+latest_phenotype_file = "waves_22.03.2021.rds" # fname to write to 
 
 # Phenotype preprocessing
 init_pheno(output_fname = latest_phenotype_file) # writes new phenotype variables >> waves_date.rds
@@ -98,7 +98,8 @@ if(reconciled <- FALSE){
   data_2020 %>% iwalk(~ saveRDS(.x[intersection], file.path(data_output, .y)))
 }else{
   # for unreconciled data using Steve's 1st batch feature name
-  dat_ref <- readRDS("/home/share/preprocessed/dat_ref.rds")
+  # https://stackoverflow.com/questions/60415726/how-to-use-regex-to-match-upto-third-forward-slash-in-r-using-gsub
+  dat_ref <- readRDS(str_c(gsub("(/.+?/.+?)/.*", "\\1", data_input) ,"/preprocessed/dat_ref.rds"))
   good_genes = dat_ref %>% featureNames()
   intersection = 
     data_2020 %>% 

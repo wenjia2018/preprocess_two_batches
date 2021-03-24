@@ -5,11 +5,8 @@ init_define_gene_sets <- function(expression_fname){
   gene_signature <- featureNames(dat)
   
   # specify which normalization method
-  if (on_jacobs_mac <- FALSE) {
-    path <- "/Volumes"
-  } else {
-    path <- "/home"
-  }
+    path <- str_c(gsub("(/.+?)/.*", "\\1", data_input)) 
+
   
   ########################################################
   # HOUSEKEEPERS
@@ -393,7 +390,15 @@ init_define_gene_sets <- function(expression_fname){
   aging_genes_up_cl3 <- (read_excel(str_c(path, "/share/projects/DE/data/aging_genes_pathways.xlsx"), sheet = "upcl3"))$Gene %>% intersect(gene_signature)
   aging_genes_up_cl4 <- (read_excel(str_c(path, "/share/projects/DE/data/aging_genes_pathways.xlsx"), sheet = "upcl4"))$Gene %>% intersect(gene_signature)
   
-  
+  cluster_union = aging_genes_down_cl1 %>%
+    union(aging_genes_down_cl2) %>% 
+    union(aging_genes_down_cl3) %>% 
+    union(aging_genes_up_cl1) %>%
+    union(aging_genes_up_cl2) %>%
+    union(aging_genes_up_cl3) %>%
+    union(aging_genes_up_cl4) 
+    
+  aging_cluster_complement = setdiff(aging_genes, cluster_union)
   # HPA genes
   hpa_genes <- c(
     "HSD3B2", "CYP11B1", "CYP17A1", "CYP11A1", "PRKAR1A", "MC2R", "LEPR", "TBX19", "POMC", "POU1F1", "NR3C2", "NR3C1", "PROP1", "FKBP5", "CRHR2", "LEP", "CRH", "AVPR1A", "CRHR1", "MC4R", "AVP", "HSD11B1",
@@ -464,7 +469,7 @@ init_define_gene_sets <- function(expression_fname){
     "Aortic_Aneurysm_DE", "Aortic_Aneurysm_DE_up", "Aortic_Aneurysm_DE_down", "Aortic_Aneurysm_DE_ud", # DE genes distinguishing TAA vs. control
     "kidney_transplant_tolerance",
     "COPD",
-    "aging", "aging_up", "aging_down", "aging_ud",
+    "aging", "aging_up", "aging_down", "aging_ud", "aging_cluster_complement",
     "IMMAGE", "IMMAGE_up", "IMMAGE_down", "IMMAGE_ud",
     "aging_down_cl1", "aging_down_cl1a", "aging_down_cl1b", "aging_down_cl1c",
     "aging_down_cl2", "aging_down_cl3",
@@ -558,7 +563,7 @@ init_define_gene_sets <- function(expression_fname){
       aging = aging_genes,
       aging_up = aging_genes_up,
       aging_down = aging_genes_down,
-      
+      aging_cluster_complement = aging_cluster_complement,
       aging_down_cl1 = aging_genes_down_cl1,
       aging_down_cl1a = aging_genes_down_cl1a,
       aging_down_cl1b = aging_genes_down_cl1b,

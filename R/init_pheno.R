@@ -1825,8 +1825,13 @@ init_pheno <- function(output_fname) {
                                                 rowSums(na.rm = TRUE) %>% as.character())) %>% 
     dplyr::select(-starts_with("H")) %>% 
     dplyr::left_join(waves_full %>% 
-                       dplyr::select(AID, matches("H5MN5[A-E]"), matches("H5MN6[A-L]"), H5MN7, H3IR17, H4DA17)) %>% 
-    mutate_at(vars(H4DA17), ~ ifelse(. %in% c(995, 996, 997, 998), NA, H4DA17))
+                       dplyr::select(AID, matches("H5MN5[A-E]"), matches("H5MN6[A-L]"), H5MN7, H3IR17, H4DA17,
+                                     H1GI11)) %>% 
+    mutate_at(vars(H4DA17), ~ ifelse(. %in% c(995, 996, 997, 998), NA, H4DA17)) %>% 
+    mutate(immigrat = case_when(H1GI11 == 7 ~ 1,
+                                H1GI11 == 6 ~ NA_real_,
+                                H1GI11 == 8 ~ NA_real_,
+                                TRUE ~ H1GI11))
   
   waves                   = waves %>% left_join(waves_race_discrim, by = "AID") 
   

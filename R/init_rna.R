@@ -21,10 +21,10 @@ init_rna <- function(rna_input_fname, geno_fname) {
       glist  = rownames(ex) # gene names
       mart   = useMart(biomart="ENSEMBL_MART_ENSEMBL", dataset="hsapiens_gene_ensembl", host="useast.ensembl.org")
       G_list = getBM(filters= "ensembl_gene_id", attributes=c("ensembl_gene_id","hgnc_symbol"), values = glist, mart= mart)
-      saveRDS(G_list, "/home/share/data_input/genename_15062020.rds")
+      saveRDS(G_list, str_c(data_input,"genename_15062020.rds"))
     }
     
-    G_list = readRDS("/home/share/data_input/genename_15062020.rds") # from Wenjia Xu
+    G_list = readRDS(str_c(data_input,"genename_15062020.rds")) # from Wenjia Xu
     G_list = G_list  %>% 
       filter(hgnc_symbol != "") %>% 
       filter(!duplicated(ensembl_gene_id) & !duplicated(hgnc_symbol)) %>% 
